@@ -10,8 +10,7 @@ ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-silverblue}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-38}"
 
 # Copy shared files between all images.
-COPY asus-install.sh /tmp/asus-install.sh
-COPY asus-packages.json /tmp/asus-packages.json
+COPY system_files/shared /
 
 # Remove Deck services when building for Ally
 RUN if grep -q "deck" <<< ${BASE_IMAGE_NAME}; then \
