@@ -42,7 +42,10 @@ RUN rpm-ostree cliwrap install-to-root / && \
         kernel-core \
         kernel-modules \
         kernel-modules-core \
-        kernel-modules-extra
+        kernel-modules-extra && \
+    git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
+    mv -vf /tmp/asus-firmware/* /usr/lib/firmware/ && \
+    rm -rf /tmp/asus-firmware
 
 # Setup things which are the same for every image
 RUN /tmp/asus-install.sh && \
