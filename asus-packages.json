@@ -3,6 +3,7 @@
         "include": {
             "all": [
                 "asusctl",
+                "asusctl-rog-gui",
                 "fprintd"
             ]
         },
