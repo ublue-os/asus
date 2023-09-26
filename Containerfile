@@ -55,6 +55,12 @@ RUN rpm-ostree cliwrap install-to-root / && \
 COPY --from=ghcr.io/ublue-os/akmods:asus-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
 # Only run if FEDORA_MAJOR_VERSION is not 39
 RUN if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
+    rpm-ostree install /tmp/akmods-rpms/ublue-os/ublue-os-akmods-addons*.rpm && \
+    for REPO in $(rpm -ql ublue-os-akmods-addons|grep ^"/etc"|grep repo$); do \
+        echo "akmods: enable default entry: ${REPO}" && \
+        sed -i '0,/enabled=0/{s/enabled=0/enabled=1/}' ${REPO} \
+    ; done && \
+    wget https://negativo17.org/repos/fedora-multimedia.repo -O /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
     rpm-ostree install \
         kernel-tools \
         /tmp/akmods-rpms/kmods/*xpadneo*.rpm \
@@ -62,8 +68,9 @@ RUN if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
         /tmp/akmods-rpms/kmods/*xone*.rpm \
         /tmp/akmods-rpms/kmods/*openrazer*.rpm \
         /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
-        /tmp/akmods-rpms/kmods/*wl*.rpm; \
-fi
+        /tmp/akmods-rpms/kmods/*wl*.rpm && \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo \
+; fi
 
 # Setup things which are the same for every image
 RUN /tmp/image-info.sh && \
