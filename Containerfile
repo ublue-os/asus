@@ -6,12 +6,14 @@ ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-38}"
 
 FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS asus
 
-ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-silverblue}"
+ARG IMAGE_NAME="${IMAGE_NAME}"
+ARG IMAGE_VENDOR="ublue-os"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
+ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-38}"
 
 # Copy shared files between all images.
-COPY asus-install.sh /tmp/asus-install.sh
-COPY asus-packages.json /tmp/asus-packages.json
+COPY system_files/shared /
 
 # Remove Deck services when building for Ally
 RUN if grep -q "deck" <<< ${BASE_IMAGE_NAME}; then \
@@ -48,7 +50,8 @@ RUN rpm-ostree cliwrap install-to-root / && \
     rm -rf /tmp/asus-firmware
 
 # Setup things which are the same for every image
-RUN /tmp/asus-install.sh && \
+RUN /tmp/image-info.sh && \
+    /tmp/asus-install.sh && \
     rm -rf /tmp/* /var/* && \    
     ostree container commit && \
     mkdir -p /var/tmp && chmod -R 1777 /tmp /var/tmp
