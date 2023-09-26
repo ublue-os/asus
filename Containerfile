@@ -1,5 +1,5 @@
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-silverblue}"
-ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}:-main"
+ARG IMAGE_FLAVOR="{IMAGE_FLAVOR:-main}"
 ARG SOURCE_IMAGE="${SOURCE_IMAGE:-${BASE_IMAGE_NAME}${IMAGE_FLAVOR}}"
 ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-38}"
@@ -53,6 +53,7 @@ RUN rpm-ostree cliwrap install-to-root / && \
 
 # Install akmods
 COPY --from=ghcr.io/ublue-os/akmods:asus-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
+
 # Only run if FEDORA_MAJOR_VERSION is not 39
 RUN if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
     rpm-ostree install /tmp/akmods-rpms/ublue-os/ublue-os-akmods-addons*.rpm && \
@@ -69,12 +70,35 @@ RUN if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
         /tmp/akmods-rpms/kmods/*openrazer*.rpm \
         /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
         /tmp/akmods-rpms/kmods/*wl*.rpm && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    for REPO in $(rpm -ql ublue-os-akmods-addons|grep ^"/etc"|grep repo$); do \
+        echo "akmods: disable per defaults: ${REPO}" && \
+        sed -i 's@enabled=1@enabled=0@g' ${REPO} \
+    ; done \
 ; fi
 
 # Setup things which are the same for every image
 RUN /tmp/image-info.sh && \
     /tmp/asus-install.sh && \
     rm -rf /tmp/* /var/* && \    
+    ostree container commit && \
+    mkdir -p /var/tmp && chmod -R 1777 /tmp /var/tmp
+
+FROM asus as asus-nvidia
+
+ARG IMAGE_NAME="${IMAGE_NAME}"
+ARG IMAGE_VENDOR="ublue-os"
+ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME}"
+ARG IMAGE_FLAVOR="${IMAGE_FLAVOR}"
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-38}"
+ARG NVIDIA_MAJOR_VERSION="${NVIDIA_MAJOR_VERSION:-535}"
+
+COPY system_files/shared system_files/nvidia /
+COPY --from=ghcr.io/ublue-os/akmods-nvidia:asus-${FEDORA_MAJOR_VERSION}-${NVIDIA_MAJOR_VERSION} /rpms /tmp/akmods-rpms
+
+RUN /tmp/image-info.sh && \
+    /tmp/nvidia-install.sh && \
+    /tmp/nvidia-post-install.sh && \
+    rm -rf /tmp/* /var/* && \
     ostree container commit && \
     mkdir -p /var/tmp && chmod -R 1777 /tmp /var/tmp
