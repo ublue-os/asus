@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image_flavor: [-nokmods, -nvidia]
+        image_flavor: [-nokmods]
         base_name: [asus]
         base_image_name:
           - silverblue
