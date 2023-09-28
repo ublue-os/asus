@@ -34,12 +34,6 @@ jobs:
           - base
           - lxqt
           - mate
-          - bazzite
-          - bazzite-gnome
-          - bazzite-deck
-          - bazzite-deck-gnome
-          - bluefin
-          - bluefin-dx
           - onyx
         major_version: [38, 39]
         include:
