@@ -69,7 +69,11 @@ RUN if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
         /tmp/akmods-rpms/kmods/*openrazer*.rpm \
         /tmp/akmods-rpms/kmods/*v4l2loopback*.rpm \
         /tmp/akmods-rpms/kmods/*wl*.rpm && \
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo \
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/negativo17-fedora-multimedia.repo && \
+    for REPO in $(rpm -ql ublue-os-akmods-addons|grep ^"/etc"|grep repo$); do \
+        echo "akmods: disable default entry: ${REPO}" && \
+        sed -i '1,/enabled=1/{s/enabled=1/enabled=0/}' ${REPO} \
+    ; done \
 ; fi
 
 # Setup things which are the same for every image
