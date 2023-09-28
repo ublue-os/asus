@@ -3,8 +3,9 @@
 set -ouex pipefail
 
 if [[ "${FEDORA_MAJOR_VERSION}" -le 38 ]]; then
-    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/fedora-{cisco-openh264,modular,updates-modular}.repo
-else
+    sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/fedora-{modular,updates-modular}.repo
+fi
+if [[ -f /etc/yum.repos.d/fedora-cisco-openh264.repo ]]; then
     sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/fedora-cisco-openh264.repo
 fi
 
