@@ -26,9 +26,7 @@ RUN wget https://copr.fedorainfracloud.org/coprs/lukenukem/asus-linux/repo/fedor
         kernel-core \
         kernel-modules \
         kernel-modules-core \
-        kernel-modules-extra \
-        kernel-devel \
-        kernel-devel-matched && \
+        kernel-modules-extra && \
     git clone https://gitlab.com/asus-linux/firmware.git --depth 1 /tmp/asus-firmware && \
     cp -rf /tmp/asus-firmware/* /usr/lib/firmware/ && \
     rm -rf /tmp/asus-firmware
