@@ -38,7 +38,6 @@ COPY --from=ghcr.io/ublue-os/akmods:asus-${FEDORA_MAJOR_VERSION} /rpms /tmp/akmo
 
 # Only run if FEDORA_MAJOR_VERSION is not 39
 RUN if [ ${FEDORA_MAJOR_VERSION} -lt 39 ]; then \
-    rpm-ostree install /tmp/akmods-rpms/ublue-os/ublue-os-akmods-addons*.rpm && \
     for REPO in $(rpm -ql ublue-os-akmods-addons|grep ^"/etc"|grep repo$); do \
         echo "akmods: enable default entry: ${REPO}" && \
         sed -i '0,/enabled=0/{s/enabled=0/enabled=1/}' ${REPO} \
