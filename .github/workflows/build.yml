@@ -40,29 +40,15 @@ jobs:
           - lazurite
           - mate
           - onyx
-        major_version: [38, 39]
+        major_version: [39]
         include:
           - major_version: 39
             is_latest_version: true
             is_stable_version: true
             is_gts_version: false
-          - major_version: 38
-            is_latest_version: false
-            is_stable_version: true
-            is_gts_version: true
         exclude:
           - image_flavor: -nokmods
             major_version: 39
-          - image_flavor: -main
-            major_version: 38
-          - image_flavor: -main
-            major_version: 37
-          # There is no Fedora 38 version of onyx or lazurite
-          - base_image_name: lazurite
-            major_version: 38
-          - base_image_name: onyx
-            major_version: 38
-          # lazurite supercedes lxqt in Fedora 39
           - base_image_name: lxqt
             major_version: 39
     steps:
